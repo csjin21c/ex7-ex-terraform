@@ -27,8 +27,9 @@ build/
 dist/
 *.egg-info/
 
-# === 기타 ===
+# === 6. Terraform 관련 ===
 .terraform
 .terraform.lock.hcl
 .terraform.tfstate
-강의자료.ini       # 강의 자료 파일 (개인적으로 관리)
+
+# === 7. 기타 ===

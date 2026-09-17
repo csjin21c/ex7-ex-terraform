@@ -2,15 +2,17 @@ name: "Terraform CI/CD Pipeline"
 # 1. 트리거 조건 설정: 어떤 이벤트에서 워크플로우를 실행할지 지정
 on:
   push: # 작업 PC에서 push를 실행할 때
-    branches: [main]
-    paths: # 배포 기준이 될 파일이 있는 위치(변경된 파일 기준)
-      - 'infra/project/**'
+    branches: # [main]
+      - main
+#     paths: # 배포 기준이 될 파일이 있는 위치(변경된 파일 기준)
+#       - 'infra/project/**'
+# #         - 'project/**'
+#   pull_request:
+#     branches: [main]
+#     paths:
+#       - 'infra/project/**'
 #         - 'project/**'
-  pull_request:  # 
-    branches: [main]
-    paths:
-      - 'infra/project/**'
-#         - 'project/**'
+
 # 2. 권한 설정 (OpenID Connect 또는 시크릿 접근 권한)
 permissions:
   contents: read
@@ -42,10 +44,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY  }}
           aws-region: ${{ secrets.AWS_REGION }}
-          audience: sts.amazonaws.com   # AWS 접속을 위한 토큰 발급 대상 지정
-          output-env-credentials: true  # 깃허브 액션의 환경 변수로 자동 저장
+          audience: sts.amazonaws.com   # AWS 접속에 사용될 토큰 발급 대상 지정
+          output-env-credentials: true  # 깃허브 액션의 환경 변수 자동 저장
 
-      # 3-4. 테라폼 초기화 (Provider 다운로드 및 Backend 설정)
+      # 3-4. 테라폼 초기화 (Provider 다운로드)
       - name: Terraform Init
         run: terraform init
 
@@ -54,12 +56,11 @@ jobs:
         run: terraform validate
 
       # 3-6. 변경 사항 미리보기 (Plan)
-      # 컬러를 포함할 경우 색상코드를 텍스트로 표현해 깨져서 출력되는 것을 방지
       - name: Terraform Plan
-        run: terraform plan -no-color
-        continue-on-error: false  # 에러 발생시 다음 단계 진행 여부 결정(true-진행, false-종료)
+        run: terraform plan -no-color   # 브라우저 출력시 색코드로 인한 글짜 깨짐 방지
+        continue-on-error: false        # Error 발생시 계속진행(true), 종료(false)
 
+      # 컬러를 포함할 경우 색상코드를 텍스트로 표현해 깨져서 출력되는 것을 방지
       # 3-7. 인프라 반영 (Apply) or - main 브랜치에 푸시(Merge)될 때만 실행
-      - name: Terraform Apply or Destory
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform destroy -auto-approve
+      - name: Terraform Apply & Destroy
+        run: terraform apply --auto-approve
