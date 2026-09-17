@@ -63,4 +63,5 @@ jobs:
       # 컬러를 포함할 경우 색상코드를 텍스트로 표현해 깨져서 출력되는 것을 방지
       # 3-7. 인프라 반영 (Apply) or - main 브랜치에 푸시(Merge)될 때만 실행
       - name: Terraform Apply & Destroy
-        run: terraform apply --auto-approve
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform destroy --auto-approve
