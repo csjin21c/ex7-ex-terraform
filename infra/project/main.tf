@@ -7,5 +7,5 @@ resource "aws_vpc" "this" {
 
   assign_generated_ipv6_cidr_block     = false
   enable_network_address_usage_metrics = false
-  tags                                 = { Name = "csjin-test-vpc" }
+  tags                                 = { Name = "csjin-test1-vpc" }
 }
