@@ -2,11 +2,9 @@ name: "Terraform CI/CD Pipeline"
 # 1. 트리거 조건 설정: 어떤 이벤트에서 워크플로우를 실행할지 지정
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 #       paths: # 배포 기준이 될 파일이 있는 위치(변경된 파일 기준)
 #         - 'state_resource/**'
 #         - 'project/**'
